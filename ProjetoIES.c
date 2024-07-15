@@ -8,8 +8,6 @@ int main()
     time_t now;
     struct tm *local;
     
-    setenv("TZ", "America/Sao_Paulo", 1);
-    tzset();
     time(&now);
     local = localtime(&now);
     
