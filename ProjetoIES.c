@@ -13,7 +13,7 @@ typedef struct {
 Chamado painelChamados[MAX_CHAMADOS];
 int indicePainel = 0;
 
-void gerarSenha(int *prioridade, int *normal) {
+int gerarSenha(int *prioridade, int *normal) {
     int tipoSenha;
     time_t agora;
     struct tm *local;
@@ -29,11 +29,13 @@ void gerarSenha(int *prioridade, int *normal) {
         printf("Data atual: %02d/%02d/%04d\n", local->tm_mday, local->tm_mon + 1, local->tm_year + 1900);
         printf("Hora atual: %02d:%02d\n\n", local->tm_hour, local->tm_min);
         (*prioridade)++;
+        return 1;
     } else if (tipoSenha == 2) {
         printf("Senha: N%d\n", *normal);
         printf("Data atual: %02d/%02d/%04d\n", local->tm_mday, local->tm_mon + 1, local->tm_year + 1900);
         printf("Hora atual: %02d:%02d\n\n", local->tm_hour, local->tm_min);
         (*normal)++;
+        return 2;
     }
 }
 
@@ -79,28 +81,35 @@ void mostrarPainelChamados() {
     }
 }
 
-void chamarSenha(int chamadasPrioridade, int chamadasNormal, int totalPrioridade, int totalNormal) {
+int chamarSenha(int chamadasPrioridade, int chamadasNormal, int totalSenhas, int totalPrioridade, int totalNormal) {
     int guiche;
     char tipo;
     int senha;
+    int senhaschamadas=0;
+    int i;
 
-    if (chamadasPrioridade < totalPrioridade) {
-        tipo = 'P';
-        senha = chamadasPrioridade + 100;
-        printf("Informe o guichê para a senha P%d: ", senha);
-        scanf("%d", &guiche);
-        printf("\nChamando P%d no guichê %d\n", senha, guiche);
-        registrarChamado(guiche, senha, tipo);
-    } else if (chamadasNormal < totalNormal) {
-        tipo = 'N';
-        senha = chamadasNormal + 100;
-        printf("Informe o guichê para a senha N%d: ", senha);
-        scanf("%d", &guiche);
-        printf("\nChamando N%d no guichê %d\n", senha, guiche);
-        registrarChamado(guiche, senha, tipo);
-    } else {
-        printf("Nenhuma senha para chamar no momento.\n");
-    }
+    void(senhaschamadas=0; senhaschamadas<totalSenhas; senhaschamadas++){
+        for(i=0; i<2; i++){
+            if (chamadasPrioridade < totalPrioridade) {
+                tipo = 'P';
+                senha = chamadasPrioridade + 100;
+                printf("Informe o guichê para a senha P%d: ", senha);
+                scanf("%d", &guiche);
+                printf("\nChamando P%d no guichê %d\n", senha, guiche);
+                registrarChamado(guiche, senha, tipo);
+                chamadasPrioridade++;
+            }
+            }  if (chamadasNormal < totalNormal) {
+                tipo = 'N';
+                senha = chamadasNormal + 100;
+                printf("Informe o guichê para a senha N%d: ", senha);
+                scanf("%d", &guiche);
+                printf("\nChamando N%d no guichê %d\n", senha, guiche);
+                registrarChamado(guiche, senha, tipo);
+                chamadasNormal++;
+            } 
+            }
+                printf("Nenhuma senha para chamar no momento.\n");
 }
 
 int main() {
@@ -108,16 +117,22 @@ int main() {
     int totalPrioridade = 0, totalNormal = 0;
     int chamadasPrioridade = 0, chamadasNormal = 0;
     int opcao;
+    int tipoSenha, totalSenhas;
 
     do {
         printf("Menu: 1- Gerar Senha  2- Chamar Senha  3- Mostrar Painel  0- Sair\n");
         scanf("%d", &opcao);
 
         if (opcao == 1) {
-            gerarSenha(&prioridade, &normal);
-            totalPrioridade++;
+            tipoSenha=gerarSenha(&prioridade, &normal);
+            if(tipoSenha==1) {
+                totalPrioridade++;
+            }
+            if(tipoSenha==2) {
+                totalNormal++;
+            } totalSenhas++;
         } else if (opcao == 2) {
-            chamarSenha(chamadasPrioridade, chamadasNormal, totalPrioridade, totalNormal);
+            chamarSenha(chamadasPrioridade, chamadasNormal, totalSenhas, totalPrioridade, totalNormal);
             chamadasPrioridade += (opcao == 1 && chamadasPrioridade < totalPrioridade);
             chamadasNormal += (opcao == 2 && chamadasNormal < totalNormal);
         } else if (opcao == 3) {
